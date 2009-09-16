@@ -269,7 +269,7 @@ public class Proba extends JFrame{
 							/*TODO treba neko rješenje da se ugasi pozadinska aplikacija 
 							 * setVisible(false); */
 							
-							new Igra(veza);
+							new Igra(veza, null, 0);
 						} else {
 							JOptionPane.showMessageDialog(null, error, "Greska!", JOptionPane.ERROR_MESSAGE);
 						}
