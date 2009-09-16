@@ -1,0 +1,4 @@
+12- Saljem kartu klijentu -povlacenja
+13- Saljem kljentu informaciju o odigranoj karti
+14 - Saljem informaciju da smije tuci
+Klijent serveru salje kao kod karte 33 ako zeli tuci a kod 24 ako ne zeli
