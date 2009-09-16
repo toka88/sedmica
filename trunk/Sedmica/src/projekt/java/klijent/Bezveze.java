@@ -10,7 +10,7 @@ public class Bezveze {
 		SwingUtilities.invokeLater(new Runnable() {			
 			@Override
 			public void run() {
-				new Igra(veza);
+				new Igra(veza, null, 0);
 			}
 		});
 	}
