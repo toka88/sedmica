@@ -1,0 +1,45 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+        version="1.0">
+        <persistence-unit name="projekt">
+                <provider>org.hibernate.ejb.HibernatePersistence</provider>
+                
+                <class>projekt.java.baza.model.Korisnik</class>
+                
+                <properties>
+                        <property name="hibernate.bytecode.use_reflection_optimizer" value="true"/>
+                        <property name="hibernate.default_batch_fetch_size" value="100"/>
+                        <property name="hibernate.cache.use_second_level_cache" value="true"/>
+                        <property name="hibernate.cache.use_query_cache" value="true"/>
+                        <property name="hibernate.cache.provider_class" value="net.sf.ehcache.hibernate.EhCacheProvider"/>
+
+                        <property name="hibernate.archive.autodetection" value="class, hbm"/>
+                        <property name="hibernate.show_sql" value="true"/>
+                        <property name="hibernate.format_sql" value="true"/>
+                        <property name="hibernate.hbm2ddl.auto" value="update"/>  <!-- kasnije stavi na update -->
+                        <property name="hibernate.transaction.flush_before_completion" value="true"/>
+                        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLInnoDBDialect"/>
+                        <!--  Set isolation level to repeatable_read (read_commited je 2) -->
+                        <property name="hibernate.connection.isolation" value="4"/>
+                        <property name="hibernate.connection.release_mode" value="after_transaction"/>
+                        <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+                        
+                        
+                        <property name="hibernate.connection.url" 
+                          value="jdbc:mysql://localhost/jimenikdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf-8"/>
+                        <property name="hibernate.connection.username" value="jimenik_user"/>
+                        <property name="hibernate.connection.password" value="tajna3"/>
+                        
+                        
+                        
+                        <property name="hibernate.c3p0.min_size" value="5"/>
+                        <property name="hibernate.c3p0.max_size" value="50"/>
+                        <property name="hibernate.c3p0.timeout" value="300"/>
+                        <property name="hibernate.c3p0.max_statements" value="50"/>
+                        <property name="hibernate.c3p0.idle_test_period" value="600"/>
+                        <!-- Ovo preporucaju izostaviti jer usporava, ali ipak... -->
+                        <property name="hibernate.c3p0.validate" value="true"/>
+                </properties>
+        </persistence-unit>
+</persistence>
