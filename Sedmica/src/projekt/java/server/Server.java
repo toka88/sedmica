@@ -66,7 +66,6 @@ public class Server {
 	private static void initServerSobe() {
 		for (int i = 0; i < maxBrojSoba; i++) {
 			Soba soba = new Soba(i);
-			soba.getPopisIgraca().add(new Igrac(1, "Mario"));
 			listaSoba.add(soba);
 		}
 		System.out.println("Server: Sobe inicijalizirane.");
