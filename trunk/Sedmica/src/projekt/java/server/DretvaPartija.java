@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Stack;
 
-import projekt.java.server.opisne_klase.Igrac;
-import projekt.java.server.opisne_klase.Potez;
-import projekt.java.server.opisne_klase.Soba;
+import projekt.java.klase.Igrac;
+import projekt.java.klase.Potez;
+import projekt.java.klase.Soba;
 
 /**
  * Razred DretvaPartija brine se za sve oko partije
@@ -86,10 +86,11 @@ public class DretvaPartija implements Runnable {
 	 * Overrideana run metoda sucelja Runnable.Pokrece odredeni
 	 * model igre ovisno o broju igraca koji igru igraju
 	 */
+	
 	@Override
 	public void run() {
 		if((igraciMod==2)||(igraciMod==3)){
-			igraBezParova();
+			//igraBezParova();
 		}
 		else{
 			igraSaParovima();
@@ -108,7 +109,7 @@ public class DretvaPartija implements Runnable {
 	/**
 	 * Implementacija partije u igri bez parova.Samo
 	 * pobjednik dobiva bodove
-	 */
+	 *//*
 	private void igraBezParova() {
 		//Trenutni igrac opisuje igraca u vodstvu
 		int trenutniIgrac=0,primljeno = 0,pocetniIgrac=0;
@@ -183,7 +184,7 @@ public class DretvaPartija implements Runnable {
 		}
 		
 		}
-
+*/
 	private void PribrojiBodove(Igrac igrac, Stack<Byte> naStolu) {
 		int bodovi=igrac.getBrojBodova();
 		while(!naStolu.isEmpty()){
@@ -288,7 +289,7 @@ public class DretvaPartija implements Runnable {
 
 	/**
 	 * Djeli karte na pocetku partije
-	 */
+	 *//*
 	private void podjeliKarte(ArrayList<LinkedList<Byte>> uRuci,int brojKarata,int sljedeciIgrac) {
 		int brojIgraca=soba.getPopisIgraca().size();
 		
@@ -311,11 +312,12 @@ public class DretvaPartija implements Runnable {
 		}
 		
 	}
+	*/
 	/**
 	 * Salje poruku svim igracima o odigranoj karti
 	 * @param kodKarte Kod odigrane karte
 	 * @param indexIgraca Indeks igraca koji je kartu odigrao
-	 */
+	 *//*
 	private void PosaljiIgracimaOdigranuKartu(byte kodKarte,int indexIgraca) {
 		ArrayList<Igrac> igraci=soba.getPopisIgraca();
 		for(int i=0;i<igraci.size();i++){
@@ -329,13 +331,14 @@ public class DretvaPartija implements Runnable {
 		}
 		
 	}
+	*/
 	/**
 	 * Salje poruku o kartu
 	 * 
 	 * @param potez Potez kome se salje, koja karta, smije li igrati
 	 * @param kod Kod 3 znaci slanje nove karte,kod 4 znaci slanje karte koja
 	 * je odigrana
-	 */
+	 *//*
 	private void posaljiKartu(Potez potez,int kod) {
 	Igrac trenutniIgrac=soba.getPopisIgraca().get(VratiIndexIgraca(potez.getKljucKorisnika()));
 	//TODO posalji kartu
@@ -347,6 +350,7 @@ public class DretvaPartija implements Runnable {
 		System.out.println("Slanje karte"+potez.getKodKarte()+" korisniku "+potez.getKljucKorisnika()+" nije uspjelo!");
 	}
 	}
+	*/
 }
 
 

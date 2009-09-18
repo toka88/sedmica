@@ -2,6 +2,9 @@ package projekt.java.klase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
+
+import projekt.java.klase.Potez;
 
 /**
  * (Srijalizirana)Ova klasa predstavlja jednu Sobu na serveru.
@@ -18,8 +21,13 @@ public class Soba implements Serializable{
 	/** Indentifikacijski broj sobe */
 	private int idSobe;
 
+	/** Lista u koju server šalje sve zahtjeve od korisnika dretvi koja regulira partiju. */
+	private volatile LinkedList<Potez> odigraniPotez = new LinkedList<Potez>();
 
-
+	/** Metoda za dohvat listeOdigranih poteza */
+	public LinkedList<Potez> getListaPoteza(){
+		return odigraniPotez;
+	}
 	
 	public ArrayList<Igrac> getPopisIgraca() {
 		return popisIgraca;
