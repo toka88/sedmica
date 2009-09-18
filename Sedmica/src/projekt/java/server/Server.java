@@ -172,11 +172,11 @@ public class Server {
 				case 2:	paketZaKlijenta.writeObject( new PaketSoba(listaSoba) );
 						break;
 						/* Statistika RETURN ArrayList<Igrac> statistikaIgraèa */
-				case 3: ArrayList<projekt.java.server.opisne_klase.Igrac> izBaze =  baza.dohvatiStatistike();						
+				case 3: ArrayList<Igrac> izBaze =  baza.dohvatiStatistike();						
 						ArrayList<Igrac> igraci = new ArrayList<Igrac>();
 						/*TODO srediti da je klasa Igrac ona iz projekt.java.klase	*/
 						for( int i = 0; i < izBaze.size(); i++){
-							projekt.java.server.opisne_klase.Igrac ind = izBaze.get(i);
+							Igrac ind = izBaze.get(i);
 							Igrac tmp = new Igrac(ind.getKljucKorisnika());
 							tmp.setIme(ind.getIme());
 							igraci.add(tmp);
