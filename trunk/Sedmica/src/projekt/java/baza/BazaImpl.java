@@ -3,7 +3,7 @@ package projekt.java.baza;
 import java.util.ArrayList;
 
 import projekt.java.baza.model.Korisnik;
-import projekt.java.server.opisne_klase.Igrac;
+import projekt.java.klase.Igrac;
 
 /**
  * Razred nudi metode za razjmenu podataka sa bazom podataka.
