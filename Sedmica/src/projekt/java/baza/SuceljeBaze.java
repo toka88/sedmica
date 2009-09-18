@@ -2,7 +2,7 @@ package projekt.java.baza;
 
 import java.util.ArrayList;
 
-import projekt.java.server.opisne_klase.Igrac;
+import projekt.java.klase.Igrac;
 
 interface  SuceljeBaze {
 	
