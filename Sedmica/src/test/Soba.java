@@ -20,7 +20,7 @@ public class Soba implements Serializable{
 	/** Indentifikacijski broj sobe */
 	private int idSobe;
 
-
+	/*komentar*/
 
 	
 	/** Konstruktor klase Soba */
