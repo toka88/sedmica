@@ -71,6 +71,7 @@ public class Server {
 		System.out.println("Server: Sobe inicijalizirane.");
 	}
 	
+	int TEMPbrIgraca = 1; /*TODO IZBRIŠI MENE, SLOBODNO ;) */
 	/**
 	 * Pomoæni razred za obradu klijenata. Svaki novi zahtjev æe dobiti 
 	 * svoju dretvu koja æe prihvatiti i obraðivati njegove zahtjeve.
@@ -131,7 +132,6 @@ public class Server {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {}
-			
 			
 			switch( kod ){				
 						/* Autorizacija  RETURN int kljucKorisnika*/
@@ -215,6 +215,27 @@ public class Server {
 						/* Uði u sobu */
 				case 7: System.out.println(" Test PAKET. ");
 						break;
+	
+				/* TODO ovo inaèe radi DretvaPartija() */
+						
+				case 21:NabaviPaket paket = new NabaviPaket(21); 
+						paket.setErr("1,1,4,12,1");
+						paketZaKlijenta.writeObject( paket );
+						break;
+
+				case 23:
+						NabaviPaket paketKarte = new NabaviPaket(23); 
+						paketKarte.setErr( (TEMPbrIgraca + 8) + "," + TEMPbrIgraca + "," + ( ( TEMPbrIgraca > 2 )?1:0 ) );
+						TEMPbrIgraca = TEMPbrIgraca + 1;
+						paketZaKlijenta.writeObject( paketKarte );
+						System.out.println("Netko me traži kartu!!" + TEMPbrIgraca );
+						break;
+						
+						
+				////////////////////////////////////////////////		
+						
+						
+						
 						/* Neprepoznat paket */
 				default:paketZaKlijenta.writeObject( new NabaviPaket(-1,"Neispravan kôd poruke."));	
 						System.out.println("Kod poruke je neispravan.");
