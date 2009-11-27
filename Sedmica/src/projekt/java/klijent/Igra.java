@@ -34,7 +34,7 @@ public class Igra extends JFrame {
 	/** Ako je true, korisnik je na redu za bacanje karte*/
 	private boolean naReduSam;/*OVO OMOGUÆUJE DA STAVLJAŠ KARTE NA STOL */
 	
-	/** Ako je true karta se može baciti, u protivnom, karta je baèena.*/
+	/** Ako je true karta se može baciti, u protivnom, karta je baèena.*/ /* Èemu ovo kad veæ postoji naReduSam?? */
 	private boolean mozeSeBaciti;
 
 	private Igrac igrac;
@@ -90,50 +90,70 @@ public class Igra extends JFrame {
         cp.add(donjaKarta);
         
         /* Inicijalizacija prikaza karata. */
-        SkupKarata gornjeKarte = new SkupKarata(3,pozadina,"gore");
+        SkupKarata gornjeKarte = new SkupKarata(4,pozadina,"gore");
         cp.add(gornjeKarte);//gornje karte
         
-        SkupKarata lijevoKarte = new SkupKarata(1,pozadina,"lijevo");
+        SkupKarata lijevoKarte = new SkupKarata(4,pozadina,"lijevo");
         cp.add(lijevoKarte);//lijevo karte
         
-        SkupKarata desnoKarte = new SkupKarata(1,pozadina,"lijevo");
+        SkupKarata desnoKarte = new SkupKarata(4,pozadina,"desno");
         cp.add(desnoKarte);//desno karte       
         
         /* Inicijalizacija stola. */
         final CardTable stol = new CardTable();
         cp.add(stol);
         stol.setTableSize(400, 300);
-
-
+        /*
+         * Provjeri jesi li na redu.
+         * Ako jesi onda igraj inaæe èekaj da doðeš na red.
+         * */
         
-        final SkupKarataKorisnik mojeKarte = new SkupKarataKorisnik(deck[1],deck[2],deck[3],deck[4]);
+        /* Nabavi od servera koje su tvoje karte */ 
+        byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
+        final SkupKarataKorisnik mojeKarte = new SkupKarataKorisnik(deck[karte[0]],deck[karte[1]],deck[karte[2]],deck[karte[3]]);
         cp.add(mojeKarte);//moje karte        	   
+        /* Ako je peti byte veæi od nule to znaèi da je igraè na potezu */
+        if ( karte[4] > 0 ){
+        	naReduSam = true;
+        } else {
+        	naReduSam = false;
+        }
         
-        // hardkodiranje
-            naReduSam = true;
-            mozeSeBaciti = true;
+        // hardkodiranje    
+        mozeSeBaciti = true;
+        
         mojeKarte.addMouseListener(new MouseListener(){
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getX()<=80){
-					System.out.println("Stisnuta prva karta");
+					//System.out.println("Stisnuta prva karta");
 					if (naReduSam && mozeSeBaciti) {
 						try {
 							stol.dodajMojeKarte(mojeKarte.getKarta(0));
 						} catch (Exception ex) {
 						}
-						int[] karte = null;
-						veza.povuciPotez(idSobe, igrac.getKljucKorisnika(), 0, karte);
+						veza.povuciPotez(idSobe, igrac.getKljucKorisnika(), mojeKarte.getKarta(0).getIdKarte());
 						mojeKarte.izbaciKartu(0);
 						mozeSeBaciti = false;
+						/*
+						for( int i = 0; i < 2; i++){
+							//stol.dodajDesneKarte(deck[veza.cekajPotez(idSobe)]);
+							System.out.println("id Karte" + veza.cekajPotez(idSobe));
+							stol.dodajLijeveKarte(deck[12]);
+						}*/
+						
 					}
 				}
 				if (e.getX()>80&& e.getX()<160){
-					System.out.println("Stisnuta druga karta");
+					//System.out.println("Stisnuta druga karta");
 					if (naReduSam && mozeSeBaciti) {
 						try {
 							stol.dodajMojeKarte(mojeKarte.getKarta(1));
+							//doda karte na druge pozicije...
+						//	stol.dodajDesneKarte(mojeKarte.getKarta(0));
+						//	stol.dodajGornjeKarte(mojeKarte.getKarta(0));
+						//	stol.dodajLijeveKarte(mojeKarte.getKarta(0));
 						} catch (Exception ex) {
 						}
 						mojeKarte.izbaciKartu(1);
@@ -141,7 +161,7 @@ public class Igra extends JFrame {
 					}
 				}
 				if (e.getX()>=160 && e.getX()<240){
-					System.out.println("Stisnuta treca karta");
+					//System.out.println("Stisnuta treca karta");
 					if (naReduSam && mozeSeBaciti) {
 						try {
 							stol.dodajMojeKarte(mojeKarte.getKarta(2));
@@ -152,7 +172,7 @@ public class Igra extends JFrame {
 					}
 				}
 				if (e.getX()>=240){
-					System.out.println("Stisnuta cetvrta karta");
+					//System.out.println("Stisnuta cetvrta karta");
 					if (naReduSam && mozeSeBaciti) {
 						try {
 							stol.dodajMojeKarte(mojeKarte.getKarta(3));
@@ -180,19 +200,35 @@ public class Igra extends JFrame {
         JButton gumbDosta = new JButton("Dosta");
         cp.add(gumbDosta);
         gumbDosta.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 			}
         	
         });
         
+        
+        /* SwingWorker èeka u pozadini za nove odigrane karte */
         SwingWorker<String,Void> worker = new SwingWorker<String,Void>(){
-
 			@Override
 			protected String doInBackground() throws Exception {
-	
-				return null;
+			while(true){
+				if(!mozeSeBaciti){
+					String temp = veza.cekajPotez(idSobe);
+					String[] parm = temp.split(",");
+					int idKarte = Integer.parseInt(parm[0]);
+					int rbrKorisnika = Integer.parseInt(parm[1]);
+					
+					switch( rbrKorisnika ){
+						case 1 : stol.dodajDesneKarte(deck[idKarte]);break;
+						case 2 : stol.dodajGornjeKarte(deck[idKarte]);break;
+						case 3 : stol.dodajLijeveKarte(deck[idKarte]);break;
+					}
+					int odigraliSvi = Integer.parseInt(parm[2]);
+					if ( odigraliSvi == 0 ) continue;
+					System.out.println();
+					mozeSeBaciti = true;
+				}
+			}
 			}
         
         };
