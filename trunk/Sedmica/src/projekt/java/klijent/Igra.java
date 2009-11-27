@@ -126,62 +126,22 @@ public class Igra extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getX()<=80){
-					//System.out.println("Stisnuta prva karta");
-					if (naReduSam && mozeSeBaciti) {
-						try {
-							stol.dodajMojeKarte(mojeKarte.getKarta(0));
-						} catch (Exception ex) {
-						}
-						veza.povuciPotez(idSobe, igrac.getKljucKorisnika(), mojeKarte.getKarta(0).getIdKarte());
-						mojeKarte.izbaciKartu(0);
-						mozeSeBaciti = false;
-						/*
-						for( int i = 0; i < 2; i++){
-							//stol.dodajDesneKarte(deck[veza.cekajPotez(idSobe)]);
-							System.out.println("id Karte" + veza.cekajPotez(idSobe));
-							stol.dodajLijeveKarte(deck[12]);
-						}*/
-						
+				int indeksKarte = -1; 
+				if (e.getX()<=80){ indeksKarte = 0; }
+				if (e.getX()>80&& e.getX()<160){ indeksKarte = 1; }
+				if (e.getX()>=160 && e.getX()<240){ indeksKarte = 2; }
+				if (e.getX()>=240){ indeksKarte = 3; }
+				if (naReduSam && mozeSeBaciti && indeksKarte != -1 ) {
+					try {
+						stol.dodajMojeKarte(mojeKarte.getKarta(indeksKarte));
+					} catch (Exception ex) {
 					}
+					veza.povuciPotez(idSobe, igrac.getKljucKorisnika(), mojeKarte.getKarta(indeksKarte).getIdKarte());
+					mojeKarte.izbaciKartu(indeksKarte);
+					mozeSeBaciti = false;
+					indeksKarte = -1;
 				}
-				if (e.getX()>80&& e.getX()<160){
-					//System.out.println("Stisnuta druga karta");
-					if (naReduSam && mozeSeBaciti) {
-						try {
-							stol.dodajMojeKarte(mojeKarte.getKarta(1));
-							//doda karte na druge pozicije...
-						//	stol.dodajDesneKarte(mojeKarte.getKarta(0));
-						//	stol.dodajGornjeKarte(mojeKarte.getKarta(0));
-						//	stol.dodajLijeveKarte(mojeKarte.getKarta(0));
-						} catch (Exception ex) {
-						}
-						mojeKarte.izbaciKartu(1);
-						mozeSeBaciti = false;
-					}
-				}
-				if (e.getX()>=160 && e.getX()<240){
-					//System.out.println("Stisnuta treca karta");
-					if (naReduSam && mozeSeBaciti) {
-						try {
-							stol.dodajMojeKarte(mojeKarte.getKarta(2));
-						} catch (Exception ex) {
-						}
-						mojeKarte.izbaciKartu(2);
-						mozeSeBaciti = false;
-					}
-				}
-				if (e.getX()>=240){
-					//System.out.println("Stisnuta cetvrta karta");
-					if (naReduSam && mozeSeBaciti) {
-						try {
-							stol.dodajMojeKarte(mojeKarte.getKarta(3));
-						} catch (Exception ex) {
-						}
-						mojeKarte.izbaciKartu(3);
-						mozeSeBaciti = false;
-					}
-				}
+
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {	
@@ -197,11 +157,17 @@ public class Igra extends JFrame {
 			}      	
         });
         
+        /* Ako mogu dalje igrati ali to ne zelim */
         JButton gumbDosta = new JButton("Dosta");
         cp.add(gumbDosta);
         gumbDosta.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
+				for( int i = 0; i <= karte.length; i++ ) {
+					mojeKarte.umetniKartu(deck[karte[i]]);
+				}
+				stol.makniSveKarteSaStola();
 			}
         	
         });
@@ -217,7 +183,7 @@ public class Igra extends JFrame {
 					String[] parm = temp.split(",");
 					int idKarte = Integer.parseInt(parm[0]);
 					int rbrKorisnika = Integer.parseInt(parm[1]);
-					
+					/* Ovisno o tome koji igrac igra na to mjesto stavi kartu */
 					switch( rbrKorisnika ){
 						case 1 : stol.dodajDesneKarte(deck[idKarte]);break;
 						case 2 : stol.dodajGornjeKarte(deck[idKarte]);break;
@@ -225,7 +191,19 @@ public class Igra extends JFrame {
 					}
 					int odigraliSvi = Integer.parseInt(parm[2]);
 					if ( odigraliSvi == 0 ) continue;
-					System.out.println();
+					/* Nakon sto su svi ostali odigrali daj meni nove karte */
+					byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
+					if(karte.length == 1){ //Ako moze igrati opet onda ce doci samo jedan byte, inace uvijek dva(karte...,dozvola)
+						naReduSam = true;
+						mozeSeBaciti = true;
+						continue;
+					}
+					
+					for( int i = 0; i <= karte.length; i++ ) {
+						mojeKarte.umetniKartu(deck[karte[i]]);
+					}
+					/*TODO tu se moze dodati delay da se karte stignu pogledati */
+					stol.makniSveKarteSaStola();
 					mozeSeBaciti = true;
 				}
 			}
@@ -233,7 +211,7 @@ public class Igra extends JFrame {
         
         };
         worker.execute();
-        
+
         setResizable(false);
 		setVisible(true);
 	}
