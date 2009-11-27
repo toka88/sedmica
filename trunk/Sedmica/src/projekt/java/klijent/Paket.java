@@ -263,7 +263,8 @@ public class Paket {
 	}
 	/**
 	 * Funkcija vraæa korisniku skup njegovih karata.
-	 * -NAPOMENA - ZADNJI BYTE STAVLJEN KAO BOOLEAN VARIJABLA -> sMIJE LI IGRAÈ IGRATI.
+	 *TODO -NAPOMENA - ZADNJI BYTE STAVLJEN KAO BOOLEAN VARIJABLA -> sMIJE LI IGRAÈ IGRATI.
+	 *TODO -NAPOMENA2 - OVO KAD JEDAN ZADRAŽI TREBA BITI BRODCASTANO SVIMA!!!
 	 * @param idKorisnika
 	 * @return
 	 */
@@ -332,46 +333,6 @@ public class Paket {
 		return "Iznimka reda 0";	
 	}
 	
-	/**TODO BRIŠI ME!
-	 * Funkcija prima id igraca, sebe i odigrane karte sto potom salje serveru. U polje karte stavlja karte koje
-	 * su odigrali drugi igraci. A jednom kad su svi igraci odigrali i kad je paket s korisnikovom kartom stigao,
-	 * funkcija se prekida i vraca id sljedece karte.
-	 * @param idSobe - is sobe u kojoj se nalazi igrac
-	 * @param idIgraca - id igraca koji igra
-	 * @param odigranaKarta - id karte koju igrac igra
-	 * @param karte - referenca na polje koje predstavlja karte na stolu. U GUI.u postoji actionListener koji èeka na promjene ovog polja.
-	 * @return id karte koju je poslao server
-	 */
-	public int povuciPotez(int idSobe, int idIgraca, int odigranaKarta, int[] karte) {
-        connect();
-		try{
-			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
-	        NabaviPaket paket = new NabaviPaket(5);
-	        paket.setIdSobe(idSobe);
-			paketZaServer.writeObject( paket );
-	        
-	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
-	        NabaviPaket paketSKljucem = (NabaviPaket) paketOdServera.readObject();
-	        if( paketSKljucem.isIndex(5)){
-	        	return 1;
-	        } else if( paketSKljucem.isIndex(-1)){
-	        	return -1;
-	        }
-	       	        
-	        paketZaServer.close();
-	        paketOdServera.close();
-		}
-	    catch (IOException ioe){
-	        System.out.println("Iznimka ulaza/izlaza");
-	        System.exit(1);
-	    }
-	    catch(ClassNotFoundException k){
-	        System.out.println("Dobivena kriva klasa " + k);
-	    } finally{
-	    	close();
-	    }
-		return -1;	
-	}
 	/**
 	 * Revizija 1.0
 	 */
