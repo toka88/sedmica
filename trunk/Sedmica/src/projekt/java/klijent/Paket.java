@@ -261,7 +261,45 @@ public class Paket {
 	    }
 		return false;	
 	}
-
+	/**
+	 * Funkcija vraæa korisniku skup njegovih karata.
+	 * -NAPOMENA - ZADNJI BYTE STAVLJEN KAO BOOLEAN VARIJABLA -> sMIJE LI IGRAÈ IGRATI.
+	 * @param idKorisnika
+	 * @return
+	 */
+	public byte[] dohvatiKarte(int idKorisnika) {
+        connect();
+		byte[] karte = new byte[5];
+		try{
+			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+	        NabaviPaket paket = new NabaviPaket(21);
+	        paket.setKljuc(idKorisnika);
+			paketZaServer.writeObject( paket );
+	        
+	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+	        NabaviPaket paketKarata = (NabaviPaket) paketOdServera.readObject();
+	        
+	       	
+	        String kSKarte = paketKarata.getErr();
+	        String[] temp = kSKarte.split(",");
+	        for( int i = 0; i < temp.length; i++){
+	        	karte[i] = (byte) Integer.parseInt(temp[i]);
+	        }
+	        
+	        paketZaServer.close();
+	        paketOdServera.close();
+		}
+	    catch (IOException ioe){
+	        System.out.println("Iznimka ulaza/izlaza");
+	        System.exit(1);
+	    }
+	    catch(ClassNotFoundException k){
+	        System.out.println("Dobivena kriva klasa " + k);
+	    } finally{
+	    	close();
+	    }
+		return karte;
+	}
 	
 	public String logout(Igrac korisnik) {
 		connect();  
@@ -294,7 +332,7 @@ public class Paket {
 		return "Iznimka reda 0";	
 	}
 	
-	/**
+	/**TODO BRIŠI ME!
 	 * Funkcija prima id igraca, sebe i odigrane karte sto potom salje serveru. U polje karte stavlja karte koje
 	 * su odigrali drugi igraci. A jednom kad su svi igraci odigrali i kad je paket s korisnikovom kartom stigao,
 	 * funkcija se prekida i vraca id sljedece karte.
@@ -333,6 +371,53 @@ public class Paket {
 	    	close();
 	    }
 		return -1;	
+	}
+	/**
+	 * Revizija 1.0
+	 */
+	public void povuciPotez(int idSobe, int idIgraca, int odigranaKarta) {
+        connect();
+		try{
+			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+	        NabaviPaket paket = new NabaviPaket(5);
+	        paket.setIdSobe(idSobe);
+			paketZaServer.writeObject( paket );      	        
+	        paketZaServer.close();
+
+		}
+	    catch (IOException ioe){
+	        System.out.println("Iznimka ulaza/izlaza");
+	        System.exit(1);
+	    }
+	    finally{
+	    	close();
+	    }
+	}
+	public String cekajPotez(int idSobe) {
+        connect();
+		try{
+			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+	        NabaviPaket paket = new NabaviPaket(23);
+	        paket.setIdSobe(idSobe);
+			paketZaServer.writeObject( paket );
+	        
+	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+	        NabaviPaket paketSKljucem = (NabaviPaket) paketOdServera.readObject();
+        
+	        paketZaServer.close();
+	        paketOdServera.close();
+	        return paketSKljucem.getErr();
+		}
+	    catch (IOException ioe){
+	        System.out.println("Iznimka ulaza/izlaza");
+	        System.exit(1);
+	    }
+	    catch(ClassNotFoundException k){
+	        System.out.println("Dobivena kriva klasa " + k);
+	    } finally{
+	    	close();
+	    }
+		return null;	
 	}
 	
 }
