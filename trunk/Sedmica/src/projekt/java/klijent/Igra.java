@@ -72,7 +72,7 @@ public class Igra extends JFrame {
         
         /* Postavljanje slike karata i pozadine. */
         deck = SveKarte.dohvatiDeck();
-        Card pozadina = SveKarte.dohvatiPozadinu();
+        final Card pozadina = SveKarte.dohvatiPozadinu();
        
         
         /* Postavljanje imena igraèa za stolom*/
@@ -90,13 +90,13 @@ public class Igra extends JFrame {
         cp.add(donjaKarta);
         
         /* Inicijalizacija prikaza karata. */
-        SkupKarata gornjeKarte = new SkupKarata(4,pozadina,"gore");
+        final SkupKarata gornjeKarte = new SkupKarata(4,pozadina,"gore");
         cp.add(gornjeKarte);//gornje karte
         
-        SkupKarata lijevoKarte = new SkupKarata(4,pozadina,"lijevo");
+        final SkupKarata lijevoKarte = new SkupKarata(4,pozadina,"lijevo");
         cp.add(lijevoKarte);//lijevo karte
         
-        SkupKarata desnoKarte = new SkupKarata(4,pozadina,"desno");
+        final SkupKarata desnoKarte = new SkupKarata(4,pozadina,"desno");
         cp.add(desnoKarte);//desno karte       
         
         /* Inicijalizacija stola. */
@@ -164,7 +164,7 @@ public class Igra extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
-				for( int i = 0; i <= karte.length; i++ ) {
+				for( int i = 0; i < karte.length - 1; i++ ) {
 					mojeKarte.umetniKartu(deck[karte[i]]);
 				}
 				stol.makniSveKarteSaStola();
@@ -185,9 +185,15 @@ public class Igra extends JFrame {
 					int rbrKorisnika = Integer.parseInt(parm[1]);
 					/* Ovisno o tome koji igrac igra na to mjesto stavi kartu */
 					switch( rbrKorisnika ){
-						case 1 : stol.dodajDesneKarte(deck[idKarte]);break;
-						case 2 : stol.dodajGornjeKarte(deck[idKarte]);break;
-						case 3 : stol.dodajLijeveKarte(deck[idKarte]);break;
+						case 1 : stol.dodajDesneKarte(deck[idKarte]);
+								desnoKarte.izbaciKartu(0);
+								break;
+						case 2 : stol.dodajGornjeKarte(deck[idKarte]);
+								gornjeKarte.izbaciKartu(0);
+								break;
+						case 3 : stol.dodajLijeveKarte(deck[idKarte]);
+								lijevoKarte.izbaciKartu(0);
+								break;
 					}
 					int odigraliSvi = Integer.parseInt(parm[2]);
 					if ( odigraliSvi == 0 ) continue;
@@ -198,12 +204,20 @@ public class Igra extends JFrame {
 						mozeSeBaciti = true;
 						continue;
 					}
-					
-					for( int i = 0; i <= karte.length; i++ ) {
+
+					for( int i = 0; i < karte.length - 1; i++ ) {
 						mojeKarte.umetniKartu(deck[karte[i]]);
+						/*TODO kad proradi server ovo ukljuèiti umjesto segmeta 1.0 
+						desnoKarte.umetniKartu(pozadina);
+						gornjeKarte.umetniKartu(pozadina);
+						lijevoKarte.umetniKartu(pozadina);*/
 					}
+					/*Segment 1.0 */
+					desnoKarte.umetniKartu(pozadina);
+					gornjeKarte.umetniKartu(pozadina);
+					lijevoKarte.umetniKartu(pozadina);
 					/*TODO tu se moze dodati delay da se karte stignu pogledati */
-					stol.makniSveKarteSaStola();
+					stol.makniSveKarteSaStola();;
 					mozeSeBaciti = true;
 				}
 			}
