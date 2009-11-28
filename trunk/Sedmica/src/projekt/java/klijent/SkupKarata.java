@@ -13,7 +13,7 @@ public class SkupKarata extends JComponent {
 	private ArrayList<Card> karte;
 	/** Pozicija igraèa na ploèi */
 	private String pozicijaIgraca;
-	
+	/*TODO TREBA DODATI KONSTANTU BROJ KARATA */
 	public SkupKarata(int brojKarata, Card pozadina, String pozicijaIgraca) {
 		karte = new ArrayList<Card>();
 		for(int i = 0; i < brojKarata; i++){
@@ -34,7 +34,7 @@ public class SkupKarata extends JComponent {
 	}
 	
 	/**
-	 * Umece jednu kartu u ruku
+	 * Umece jednu kartu u ruku - TODO TREBA PONOVNO OBOJATI DA SE VIDI PROMJENA
 	 * @param karta karta koja se umece u ruku
 	 */
 	public void umetniKartu(Card karta){
