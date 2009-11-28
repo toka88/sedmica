@@ -367,6 +367,7 @@ public class Paket {
         
 	        paketZaServer.close();
 	        paketOdServera.close();
+	        System.out.println("CekajPotez -> " + paketSKljucem.getErr());
 	        return paketSKljucem.getErr();
 		}
 	    catch (IOException ioe){
