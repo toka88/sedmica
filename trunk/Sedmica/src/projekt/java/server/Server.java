@@ -227,6 +227,7 @@ public class Server {
 						NabaviPaket paketKarte = new NabaviPaket(23); 
 						paketKarte.setErr( (TEMPbrIgraca + 8) + "," + TEMPbrIgraca + "," + ( ( TEMPbrIgraca > 2 )?1:0 ) );
 						TEMPbrIgraca = TEMPbrIgraca + 1;
+						if( TEMPbrIgraca == 4 ) TEMPbrIgraca = 1;
 						paketZaKlijenta.writeObject( paketKarte );
 						System.out.println("Netko me traži kartu!!" + TEMPbrIgraca );
 						break;
