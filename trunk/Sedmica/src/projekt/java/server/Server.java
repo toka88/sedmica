@@ -15,6 +15,7 @@ import projekt.java.klase.Igrac;
 import projekt.java.klase.NabaviPaket;
 import projekt.java.klase.PaketSoba;
 import projekt.java.klase.PaketStatistika;
+import projekt.java.klase.Potez;
 import projekt.java.klase.Soba;
 
 
@@ -112,7 +113,9 @@ public class Server {
 		private void prihvatiPoruku() throws IOException {
 			
 			/* Veza prema bazi podataka. */
-			BazaImpl baza = new BazaImpl();
+			/*TODO OVO VRATITI - TRENUTNO BAZA NE TREBA AUTORIZACIJA SAMO ODUGOVLAÈI S VREMENOM 
+			 * BazaImpl baza = new BazaImpl();
+			 */
 			/* Kod dolaznog paketa */
 			NabaviPaket zahtjevaniPakt = null;
 			
@@ -129,7 +132,7 @@ public class Server {
 			System.out.println("Email ->" + zahtjevaniPakt.getEmail());
 			System.out.println("Kljuè ->" + zahtjevaniPakt.getKljuc());
 			System.out.println("Id Sobe ->" + zahtjevaniPakt.getIdSobe());	*/		
-			try {
+			try {/*TODO ÈEMU OVO? */
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {}
 			
@@ -137,7 +140,7 @@ public class Server {
 						/* Autorizacija  RETURN int kljucKorisnika*/
 				case 0: String user = zahtjevaniPakt.getUser();
 						String  pass = zahtjevaniPakt.getPass();
-						String poruka = baza.login ( user, pass);
+						String poruka = "haha#1#Izbrisi me! JA AUTORIZIRAM SVAKOGA;)";//baza.login ( user, pass);
 						
 						String[] op  = poruka.split("#");
 						
@@ -162,7 +165,7 @@ public class Server {
 						String email = zahtjevaniPakt.getEmail();
 						//System.out.println("Registriraj:" + user + pass + email);
 						/* Javi korisniku je li registriran ili nije */
-						if ( baza.registriraj(user, pass, email) ){
+						if ( true ){//*TODO VRATI ME <-   baza.registriraj(user, pass, email)
 							paketZaKlijenta.writeObject( new NabaviPaket(1));
 						} else{
 							paketZaKlijenta.writeObject( new NabaviPaket(-1,"Registracija nije uspjela"));	
@@ -172,7 +175,7 @@ public class Server {
 				case 2:	paketZaKlijenta.writeObject( new PaketSoba(listaSoba) );
 						break;
 						/* Statistika RETURN ArrayList<Igrac> statistikaIgraèa */
-				case 3: ArrayList<Igrac> izBaze =  baza.dohvatiStatistike();						
+				case 3: ArrayList<Igrac> izBaze =  null; //*TODO VRATI ME <- baza.dohvatiStatistike();						
 						ArrayList<Igrac> igraci = new ArrayList<Igrac>();
 						/*TODO srediti da je klasa Igrac ona iz projekt.java.klase	*/
 						for( int i = 0; i < izBaze.size(); i++){
@@ -205,8 +208,8 @@ public class Server {
 						break;		
 						/* Vrši odjavljivanje od sustava. */
 				case 6: user = zahtjevaniPakt.getUser();
-						if ( baza.logout(user) ) {
-							System.out.println("Logout :: " + user);
+						if ( true ) { //* TODO VRATI ME <- baza.logout(user)
+							//System.out.println("Logout :: " + user);
 							paketZaKlijenta.writeObject( new NabaviPaket(4));
 						} else {
 							paketZaKlijenta.writeObject( new NabaviPaket(-1,"Odjavljivanje od sustava nije uspjelo."));
@@ -218,9 +221,14 @@ public class Server {
 	
 				/* TODO ovo inaèe radi DretvaPartija() */
 						
-				case 21:NabaviPaket paket = new NabaviPaket(21); 
+				case 21:byte[] karte = {1,1,4,12};
+						
+						Potez posaljiPotez = new Potez (0,karte); 
+						posaljiPotez.setMojPotez(true);
+						paketZaKlijenta.writeObject( posaljiPotez );
+						/*NabaviPaket paket = new NabaviPaket(21); 
 						paket.setErr("1,1,4,12,1");
-						paketZaKlijenta.writeObject( paket );
+						paketZaKlijenta.writeObject( paket );*/
 						break;
 
 				case 23:
@@ -232,7 +240,14 @@ public class Server {
 						System.out.println("Netko me traži kartu!!" + TEMPbrIgraca );
 						break;
 						
-						
+				case 28:NabaviPaket paketLjudiUSobi = new NabaviPaket(28);
+						paketLjudiUSobi.setUser("TEstUser");
+						paketZaKlijenta.writeObject( paketLjudiUSobi );
+						System.out.println("SERVER: poslao sam podatke o novom korisniku ;)");
+						try {Thread.sleep(4000);} catch (InterruptedException e) {}
+						break;
+				case 30:
+						break;
 				////////////////////////////////////////////////		
 						
 						
