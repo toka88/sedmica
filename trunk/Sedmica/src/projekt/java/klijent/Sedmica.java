@@ -95,6 +95,7 @@ public class Sedmica extends JFrame{
 	private void initGUI() {
 		setLocation(110, 110);
 		setSize(280, 320); 
+		setDefaultLookAndFeelDecorated(false);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Pregled soba");
 		
@@ -301,7 +302,7 @@ public class Sedmica extends JFrame{
 							
 							/*TODO treba neko rješenje da se ugasi pozadinska aplikacija 
 							 * setVisible(false); */
-							
+
 							new Igra(veza, igrac, lista1.getSelectedIndex() );
 						} else {
 							JOptionPane.showMessageDialog(null, error, "Greska!", JOptionPane.ERROR_MESSAGE);
@@ -369,7 +370,7 @@ public class Sedmica extends JFrame{
 		worker.execute();		
 	}
 
-	/**
+	/**TODO OVO BI TREBALO NAPRAVITI NOVI FRAME.
 	 * Otvara prozor za prijavu korisnika za igru.
 	 */
 	private static void prijava() {
@@ -545,7 +546,6 @@ public class Sedmica extends JFrame{
 	/**
 	 * Osluškuje promjene u listi soba i prema odabranom 
 	 * elementu mijenja listu igraèa.
-	 * @author Kristijan
 	 *
 	 */
 	class SobaListener implements ListSelectionListener {
