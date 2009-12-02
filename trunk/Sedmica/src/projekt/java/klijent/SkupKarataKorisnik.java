@@ -20,6 +20,15 @@ public class SkupKarataKorisnik extends JComponent {
 		karte.add(cetvrtaKarta);
 	}
 	
+	public void ubaciKarte(Card prvaKarta, Card drugaKarta, Card trecaKarta, Card cetvrtaKarta) {
+		karte= new ArrayList<Card>();
+		karte.add(prvaKarta);
+		karte.add(drugaKarta);
+		karte.add(trecaKarta);
+		karte.add(cetvrtaKarta);
+		this.repaint();
+	}
+	
 	/**
 	 * Metoda izbacuje jednu kartu iz ruke
 	 * @param index index karte koja se izbacuje
@@ -36,6 +45,7 @@ public class SkupKarataKorisnik extends JComponent {
 	 */
 	public void umetniKartu(Card karta){
 		karte.add(karta);
+		this.repaint();
 	}
 
 	
