@@ -20,6 +20,8 @@ import projekt.java.klase.Potez;
 
 /**
  * Predstavlja ploèu za igru koju korisnik vidi tijekom igre.
+ * @author Mario
+ * @version 1.0
  */
 public class Igra extends JFrame {
 
@@ -59,9 +61,9 @@ public class Igra extends JFrame {
         cp.setLayout(new SedmicaLayout());
         
         /* Karata koja je prva bacena */
-        JLabel donjaKarta = new JLabel("_________________");
-        donjaKarta.setBorder(BorderFactory.createTitledBorder("Prva Karta"));
-        cp.add(donjaKarta);
+        JLabel prvaKarta = new JLabel("_________________");
+        prvaKarta.setBorder(BorderFactory.createTitledBorder("Prva Karta"));
+        cp.add(prvaKarta);
         
         
         /* Postavljanje slike karata i pozadine. */
@@ -166,8 +168,11 @@ public class Igra extends JFrame {
 				if( naReduSam ){
 					Potez potez = veza.dohvatiKarte(igrac.getKljucKorisnika());
 					byte[] karte = potez.getKodKarte();
-					for( int i = 0; i < karte.length - 1; i++ ) {
+					for( int i = 0; i < karte.length; i++ ) {
 						mojeKarte.umetniKartu(deck[karte[i]]);
+						desnoKarte.umetniKartu(pozadina);
+						gornjeKarte.umetniKartu(pozadina);
+						lijevoKarte.umetniKartu(pozadina);
 					}
 					stol.makniSveKarteSaStola();
 				}
@@ -209,24 +214,21 @@ public class Igra extends JFrame {
 					
 					/* Nakon sto su svi ostali odigrali daj meni nove karte */
 					Potez potez = veza.dohvatiKarte(igrac.getKljucKorisnika());
-					/*
-					if(potez.isMojPotez()){ 
+					//Ako imam donju kartu onda mogu dalje igrati
+					if ( potez.isMozesDalje()){
 						naReduSam = true;
-						mozeSeBaciti = true;
+						stol.makniSveKarteSaStola();
 						continue;
-					}*/
+					}
+
 					byte[] karte = potez.getKodKarte();
-					for( int i = 0; i < karte.length - 1; i++ ) {
+					for( int i = 0; i < karte.length; i++ ) {
 						mojeKarte.umetniKartu(deck[karte[i]]);
-						/*TODO kad proradi server ovo ukljuèiti umjesto segmeta 1.0 
 						desnoKarte.umetniKartu(pozadina);
 						gornjeKarte.umetniKartu(pozadina);
-						lijevoKarte.umetniKartu(pozadina);*/
+						lijevoKarte.umetniKartu(pozadina);
 					}
-					/*Segment 1.0 */
-					desnoKarte.umetniKartu(pozadina);
-					gornjeKarte.umetniKartu(pozadina);
-					lijevoKarte.umetniKartu(pozadina);
+
 					/*TODO tu se moze dodati delay da se karte stignu pogledati */
 					stol.makniSveKarteSaStola();;
 					naReduSam = true;
@@ -247,14 +249,11 @@ public class Igra extends JFrame {
 			@Override
 			protected String doInBackground() throws Exception {
 				while ( maxLjudi > tL ){
-					//System.out.println("maxLjudi: " + maxLjudi);
-					System.out.println("tL: " + tL);
 					String imeIgraca = veza.cekajIgrace( idSobe );
 					SkupKarata karte = (SkupKarata) getContentPane().getComponent(noviIgrac++);
 					karte.setVisible(true);
 					karte.setImeIgraca(imeIgraca);
 					tL++;
-					//if( noviIgrac == 3) break;
 				}				
 				Potez potez = veza.dohvatiKarte(igrac.getKljucKorisnika());
 				byte[] karte = potez.getKodKarte();
@@ -273,6 +272,8 @@ public class Igra extends JFrame {
         setResizable(false);
 		setVisible(true);
 	}
+	
+
 		
 	
 }
