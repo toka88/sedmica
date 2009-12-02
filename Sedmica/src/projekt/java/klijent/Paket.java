@@ -1,16 +1,16 @@
 package projekt.java.klijent;
 
+import projekt.java.klase.LjudiUSobi;
 import projekt.java.klase.NabaviPaket;
 import projekt.java.klase.PaketSoba;
 import projekt.java.klase.PaketStatistika;
+import projekt.java.klase.Potez;
 import projekt.java.klase.Soba;
 import projekt.java.klase.Igrac;
 
 
 
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,6 +18,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import com.sun.org.apache.bcel.internal.generic.LUSHR;
 /**
  * Klasa šalje i prima serializirane podatke od servera.
  * @author Mario
@@ -263,12 +265,38 @@ public class Paket {
 	}
 	/**
 	 * Funkcija vraæa korisniku skup njegovih karata.
-	 *TODO -NAPOMENA - ZADNJI BYTE STAVLJEN KAO BOOLEAN VARIJABLA -> sMIJE LI IGRAÈ IGRATI.
 	 *TODO -NAPOMENA2 - OVO KAD JEDAN ZADRAŽI TREBA BITI BRODCASTANO SVIMA!!!
 	 * @param idKorisnika
 	 * @return
 	 */
-	public byte[] dohvatiKarte(int idKorisnika) {
+	public Potez dohvatiKarte(int idKorisnika) {
+        connect();
+        Potez paketKarata = null;
+		try{
+			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+	        NabaviPaket paket = new NabaviPaket(21);
+	        paket.setKljuc(idKorisnika);
+			paketZaServer.writeObject( paket );
+	        
+	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+	        paketKarata = (Potez) paketOdServera.readObject();
+	        
+	       	
+	        paketZaServer.close();
+	        paketOdServera.close();
+		}
+	    catch (IOException ioe){
+	        System.out.println("Iznimka ulaza/izlaza");
+	        System.exit(1);
+	    }
+	    catch(ClassNotFoundException k){
+	        System.out.println("Dobivena kriva klasa " + k);
+	    } finally{
+	    	close();
+	    }
+		return paketKarata;
+	}
+	/*	public byte[] dohvatiKarte(int idKorisnika) {
         connect();
 		byte[] karte = new byte[5];
 		try{
@@ -300,7 +328,7 @@ public class Paket {
 	    	close();
 	    }
 		return karte;
-	}
+	}*/
 	
 	public String logout(Igrac korisnik) {
 		connect();  
@@ -342,7 +370,8 @@ public class Paket {
 			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
 	        NabaviPaket paket = new NabaviPaket(5);
 	        paket.setIdSobe(idSobe);
-			paketZaServer.writeObject( paket );      	        
+			
+	        paketZaServer.writeObject( paket );      	        
 	        paketZaServer.close();
 
 		}
@@ -380,6 +409,57 @@ public class Paket {
 	    	close();
 	    }
 		return null;	
+	}
+	public LjudiUSobi dohvatiLjudeUSobi() {
+		LjudiUSobi ljudi = new LjudiUSobi();
+		String[] mario = {"Ivan"};
+		ljudi.setLjudiUSobi(mario);
+		ljudi.setMaxLjudi(4);
+		return ljudi;
+	}
+	public String cekajIgrace(int idSobe) {
+		 connect();
+			try{
+				ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+		        NabaviPaket paket = new NabaviPaket(28);
+		        paket.setIdSobe(idSobe);
+				paketZaServer.writeObject( paket );
+		        
+		        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+		        NabaviPaket paketSKljucem = (NabaviPaket) paketOdServera.readObject();
+	        
+		        paketZaServer.close();
+		        paketOdServera.close();
+		        return paketSKljucem.getUser();
+			}
+		    catch (IOException ioe){
+		        System.out.println("Iznimka ulaza/izlaza");
+		        System.exit(1);
+		    }
+		    catch(ClassNotFoundException k){
+		        System.out.println("Dobivena kriva klasa " + k);
+		    } finally{
+		    	close();
+		    }
+			return null;	
+	}
+	public void dodajIgracaTEST() {
+        connect();
+		try{
+			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+	        NabaviPaket paket = new NabaviPaket(30);
+			
+	        paketZaServer.writeObject( paket );      	        
+	        paketZaServer.close();
+
+		}
+	    catch (IOException ioe){
+	        System.out.println("Iznimka ulaza/izlaza");
+	        System.exit(1);
+	    }
+	    finally{
+	    	close();
+	    }
 	}
 	
 }
