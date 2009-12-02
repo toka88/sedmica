@@ -10,35 +10,29 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 
 import projekt.java.klase.Igrac;
+import projekt.java.klase.LjudiUSobi;
+import projekt.java.klase.Potez;
 
 /**
  * Predstavlja ploèu za igru koju korisnik vidi tijekom igre.
- * @author Kristijan
- *
  */
 public class Igra extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
 	private static Card[] deck;
-	
-	private Paket veza;
-	
-	/** Labele igraèa za stolom */
-	private JLabel lijeviIgrac, desniIgrac, gornjiIgrac;
-	
+	/** Veza prema serveru */
+	private Paket veza;	
 	/** Ako je true, korisnik je na redu za bacanje karte*/
 	private boolean naReduSam;/*OVO OMOGUÆUJE DA STAVLJAŠ KARTE NA STOL */
-	
-	/** Ako je true karta se može baciti, u protivnom, karta je baèena.*/ /* Èemu ovo kad veæ postoji naReduSam?? */
-	private boolean mozeSeBaciti;
-
+	/** Ime igraca */
 	private Igrac igrac;
-
+	/** Identifikacijiski broj sobe */
 	private int idSobe;
 
 	/**
@@ -50,13 +44,7 @@ public class Igra extends JFrame {
 		this.idSobe = idSobe;
 		initGUI();
 	}
-	public Igra() {
-		initGUI();
-	}
-	public static void main(String[] args) {
-		new Igra();
 
-	}
 
 	/**
 	 * Inicijalizacija ploèe za igranje. Postavljanje karata za svakog korisnika
@@ -70,60 +58,62 @@ public class Igra extends JFrame {
 		Container cp = getContentPane();
         cp.setLayout(new SedmicaLayout());
         
+        /* Karata koja je prva bacena */
+        JLabel donjaKarta = new JLabel("_________________");
+        donjaKarta.setBorder(BorderFactory.createTitledBorder("Prva Karta"));
+        cp.add(donjaKarta);
+        
+        
         /* Postavljanje slike karata i pozadine. */
         deck = SveKarte.dohvatiDeck();
         final Card pozadina = SveKarte.dohvatiPozadinu();
-       
+          
+        /* Inicijalizacija prikaza karata. */      
+        final SkupKarata desnoKarte = new SkupKarata(pozadina,"desno");
+        desnoKarte.setVisible(false);
+        cp.add(desnoKarte);//desno karte   
         
-        /* Postavljanje imena igraèa za stolom*/
-        lijeviIgrac = new JLabel("Lijevi");
-        desniIgrac = new JLabel("Desni");
-        gornjiIgrac = new JLabel("Gornji Igraè");
-        /*
-        cp.add(lijeviIgrac);
-        cp.add(desniIgrac);
-        cp.add(gornjiIgrac);
-        */
-        
-        JLabel donjaKarta = new JLabel("Donja karta");
-        donjaKarta.setBorder(BorderFactory.createTitledBorder("Donja karta"));
-        cp.add(donjaKarta);
-        
-        /* Inicijalizacija prikaza karata. */
-        final SkupKarata gornjeKarte = new SkupKarata(4,pozadina,"gore");
+        final SkupKarata gornjeKarte = new SkupKarata(pozadina,"gore");
+        gornjeKarte.setVisible(false);
         cp.add(gornjeKarte);//gornje karte
         
-        final SkupKarata lijevoKarte = new SkupKarata(4,pozadina,"lijevo");
+        final SkupKarata lijevoKarte = new SkupKarata(pozadina,"lijevo");
+        lijevoKarte.setVisible(false);
         cp.add(lijevoKarte);//lijevo karte
-        
-        final SkupKarata desnoKarte = new SkupKarata(4,pozadina,"desno");
-        cp.add(desnoKarte);//desno karte       
-        
         /* Inicijalizacija stola. */
         final CardTable stol = new CardTable();
         cp.add(stol);
         stol.setTableSize(400, 300);
-        /*
-         * Provjeri jesi li na redu.
-         * Ako jesi onda igraj inaæe èekaj da doðeš na red.
-         * */
+
         
-        /* Nabavi od servera koje su tvoje karte */ 
-        byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
-        final SkupKarataKorisnik mojeKarte = new SkupKarataKorisnik(deck[karte[0]],deck[karte[1]],deck[karte[2]],deck[karte[3]]);
-        cp.add(mojeKarte);//moje karte        	   
-        /* Ako je peti byte veæi od nule to znaèi da je igraè na potezu */
-        if ( karte[4] > 0 ){
-        	naReduSam = true;
-        } else {
-        	naReduSam = false;
+        /* Dohvati najnovije stanje o broju igraca u sobi */
+        LjudiUSobi ljudiUSobi = veza.dohvatiLjudeUSobi();     
+        String[] imenaLjudi = ljudiUSobi.getLjudiUSobi();
+   
+        try {      	
+        	lijevoKarte.setImeIgraca(imenaLjudi[0]);
+        	cp.getComponent(3).setVisible(true);
+
+	        gornjeKarte.setImeIgraca(imenaLjudi[1]);
+	        cp.getComponent(2).setVisible(true);
+
+	        desnoKarte.setImeIgraca(imenaLjudi[2]);
+	        cp.getComponent(1).setVisible(true);
+        } catch (IndexOutOfBoundsException ex ){
+        	//nema veze ;)
         }
         
-        // hardkodiranje    
-        mozeSeBaciti = true;
+        final int trenutnoLjudi = imenaLjudi.length + 1;
+        final int maxLjudi = ljudiUSobi.getMaxLjudi();
+      
+        
+      
+        
+        final SkupKarataKorisnik mojeKarte = new SkupKarataKorisnik(pozadina,pozadina,pozadina,pozadina);
+        cp.add(mojeKarte);//moje karte        	   
+        
         
         mojeKarte.addMouseListener(new MouseListener(){
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int indeksKarte = -1; 
@@ -131,23 +121,25 @@ public class Igra extends JFrame {
 				if (e.getX()>80&& e.getX()<160){ indeksKarte = 1; }
 				if (e.getX()>=160 && e.getX()<240){ indeksKarte = 2; }
 				if (e.getX()>=240){ indeksKarte = 3; }
-				if (naReduSam && mozeSeBaciti && indeksKarte != -1 ) {
+				if (naReduSam && indeksKarte != -1 ) {
 					try {
 						stol.dodajMojeKarte(mojeKarte.getKarta(indeksKarte));
 					} catch (Exception ex) {
 					}
 					veza.povuciPotez(idSobe, igrac.getKljucKorisnika(), mojeKarte.getKarta(indeksKarte).getIdKarte());
 					mojeKarte.izbaciKartu(indeksKarte);
-					mozeSeBaciti = false;
+					naReduSam = false;
 					indeksKarte = -1;
 				}
 
 			}
 			@Override
-			public void mouseEntered(MouseEvent e) {	
+			public void mouseEntered(MouseEvent e) {
+				/*TODO to treba dodati metodu koja ce povecati kartu nad kojom se nalazi mis */
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
+				/*TODO to treba dodati metodu koja ce vratiti kartu u pr*/
 			}
 			@Override
 			public void mousePressed(MouseEvent e) {	
@@ -160,29 +152,37 @@ public class Igra extends JFrame {
         /* Ako mogu dalje igrati ali to ne zelim */
         JButton gumbDosta = new JButton("Dosta");
         cp.add(gumbDosta);
+        /* TODO Osigurat da se Dosta ne može stisnuti kad igrac ima sve karte u ruci */
         gumbDosta.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
-				for( int i = 0; i < karte.length - 1; i++ ) {
-					mojeKarte.umetniKartu(deck[karte[i]]);
+				if( naReduSam ){
+					Potez potez = veza.dohvatiKarte(igrac.getKljucKorisnika());
+					byte[] karte = potez.getKodKarte();
+					for( int i = 0; i < karte.length - 1; i++ ) {
+						mojeKarte.umetniKartu(deck[karte[i]]);
+					}
+					stol.makniSveKarteSaStola();
 				}
-				stol.makniSveKarteSaStola();
+				else JOptionPane.showMessageDialog(null, 
+						"<html><center>Nisi trenutno na redu ;).</center><br></html>",
+						"Poruka sustava",JOptionPane.ERROR_MESSAGE);
 			}
         	
         });
         
         
         /* SwingWorker èeka u pozadini za nove odigrane karte */
-        SwingWorker<String,Void> worker = new SwingWorker<String,Void>(){
+        final SwingWorker<String,Void> workerCekajPotez = new SwingWorker<String,Void>(){
 			@Override
 			protected String doInBackground() throws Exception {
 			while(true){
-				if(!mozeSeBaciti){
+				if(!naReduSam){
 					String temp = veza.cekajPotez(idSobe);
 					String[] parm = temp.split(",");
 					int idKarte = Integer.parseInt(parm[0]);
 					int rbrKorisnika = Integer.parseInt(parm[1]);
+					
 					/* Ovisno o tome koji igrac igra na to mjesto stavi kartu */
 					switch( rbrKorisnika ){
 						case 1 : stol.dodajDesneKarte(deck[idKarte]);
@@ -197,14 +197,18 @@ public class Igra extends JFrame {
 					}
 					int odigraliSvi = Integer.parseInt(parm[2]);
 					if ( odigraliSvi == 0 ) continue;
+					
+					
+					
 					/* Nakon sto su svi ostali odigrali daj meni nove karte */
-					byte[] karte = veza.dohvatiKarte(igrac.getKljucKorisnika());
-					if(karte.length == 1){ //Ako moze igrati opet onda ce doci samo jedan byte, inace uvijek dva(karte...,dozvola)
+					Potez potez = veza.dohvatiKarte(igrac.getKljucKorisnika());
+					/*
+					if(potez.isMojPotez()){ 
 						naReduSam = true;
 						mozeSeBaciti = true;
 						continue;
-					}
-
+					}*/
+					byte[] karte = potez.getKodKarte();
 					for( int i = 0; i < karte.length - 1; i++ ) {
 						mojeKarte.umetniKartu(deck[karte[i]]);
 						/*TODO kad proradi server ovo ukljuèiti umjesto segmeta 1.0 
@@ -218,15 +222,50 @@ public class Igra extends JFrame {
 					lijevoKarte.umetniKartu(pozadina);
 					/*TODO tu se moze dodati delay da se karte stignu pogledati */
 					stol.makniSveKarteSaStola();;
-					mozeSeBaciti = true;
+					naReduSam = true;
 				}
 			}
 			}
         
         };
-        worker.execute();
+        
 
+        
+        
+        
+        /* SwingWorker èeka u pozadini igraèe da doðu igrati... */
+        SwingWorker<String,Void> workerCekaIgrace = new SwingWorker<String,Void>(){
+        	private int noviIgrac = 1;
+        	private int tL = trenutnoLjudi;
+			@Override
+			protected String doInBackground() throws Exception {
+				while ( maxLjudi > tL ){
+					System.out.println("maxLjudi: " + maxLjudi);
+					System.out.println("tL: " + tL);
+					String imeIgraca = veza.cekajIgrace( idSobe );
+					SkupKarata karte = (SkupKarata) getContentPane().getComponent(noviIgrac++);
+					karte.setVisible(true);
+					karte.setImeIgraca(imeIgraca);
+					tL++;
+					//if( noviIgrac == 3) break;
+				}				
+				Potez potez = veza.dohvatiKarte(igrac.getKljucKorisnika());
+				byte[] karte = potez.getKodKarte();
+				mojeKarte.ubaciKarte(deck[karte[0]],deck[karte[1]],deck[karte[2]],deck[karte[3]]);
+				naReduSam = potez.isMojPotez();
+				workerCekajPotez.execute();
+				
+				
+				return null;
+			}
+        
+        };
+        workerCekaIgrace.execute();
+        
+   
         setResizable(false);
 		setVisible(true);
 	}
+		
+	
 }
