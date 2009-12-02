@@ -49,25 +49,20 @@ public class SedmicaLayout implements LayoutManager {
 		y=y+parent.getSize().height/(double)16;
 		komponenta.setBounds((int)x, (int)y, (int)(dimenzija.width), (int)dimenzija.height);
 		
-		SkupKarata komponenta2 = (SkupKarata)parent.getComponent(1);
+		SkupKarata komponenta2 = (SkupKarata)parent.getComponent(2);
 		dimenzija = komponenta2.getPreferredSize();
 		x=insets.left+parent.getSize().width/(double)2-komponenta2.getKarta(0).getWidth()*2;
 		y=insets.top+parent.getSize().height/(double)40;
 		komponenta2.setBounds((int)x, (int)y, (int)(komponenta2.getKarta(0).getWidth()*(double)4+25), 
 				(int)komponenta2.getKarta(0).getHeight()+10);
 		
-		SkupKarata komponenta3 = (SkupKarata)parent.getComponent(2);
+		SkupKarata komponenta3 = (SkupKarata)parent.getComponent(3);
 		dimenzija = komponenta3.getPreferredSize();
 		x=insets.left;
 		y=insets.top+parent.getSize().height/(double)2-komponenta3.getKarta(0).getHeight()/2;
 		komponenta3.setBounds((int)x, (int)y, (int)(komponenta3.getKarta(0).getWidth()*(double)2.5+10), 
 				(int)(komponenta3.getKarta(0).getHeight()*13/10)+10);
-		
-		
-		
-		
-		
-		
+
 		CardTable komponenta4 = (CardTable)parent.getComponent(4);
 		dimenzija = komponenta4.getPreferredSize();
 		x=insets.left+parent.getSize().width/(double)2-komponenta4.getTableSize().width/(double)2;
@@ -75,7 +70,7 @@ public class SedmicaLayout implements LayoutManager {
 		komponenta4.setBounds((int)x, (int)y, komponenta4.getTableSize().width, 
 				komponenta4.getTableSize().height);
 		
-		SkupKarata komponenta5 = (SkupKarata)parent.getComponent(3);
+		SkupKarata komponenta5 = (SkupKarata)parent.getComponent(1);
 		dimenzija = komponenta5.getPreferredSize();
 		x=parent.getSize().getWidth()-insets.right-(komponenta5.getKarta(0).getWidth()*(double)2.5+10);
 		y=insets.top+parent.getSize().height/(double)2-komponenta5.getKarta(0).getHeight()/2;
