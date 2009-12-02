@@ -1,10 +1,12 @@
 package projekt.java.klijent;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 public class SkupKarata extends JComponent {
 
@@ -13,16 +15,22 @@ public class SkupKarata extends JComponent {
 	private ArrayList<Card> karte;
 	/** Pozicija igraèa na ploèi */
 	private String pozicijaIgraca;
-	/*TODO TREBA DODATI KONSTANTU BROJ KARATA */
-	public SkupKarata(int brojKarata, Card pozadina, String pozicijaIgraca) {
+	/** Ime igraca */
+	private String imeIgraca = new String("Bezimeni");
+
+	public SkupKarata( Card pozadina, String pozicijaIgraca) {
 		karte = new ArrayList<Card>();
-		for(int i = 0; i < brojKarata; i++){
+		for(int i = 0; i < 4; i++){
 			karte.add(pozadina);
 		}
 		this.pozicijaIgraca = pozicijaIgraca;
-		
 	}
-	
+
+	public void setImeIgraca(String imeIgraca) {
+		this.imeIgraca = imeIgraca;
+		this.repaint();
+	}
+
 	/**
 	 * Metoda izbacuje jednu kartu iz ruke
 	 * @param index index karte koja se izbacuje
@@ -34,11 +42,12 @@ public class SkupKarata extends JComponent {
 	}
 	
 	/**
-	 * Umece jednu kartu u ruku - TODO TREBA PONOVNO OBOJATI DA SE VIDI PROMJENA
+	 * Umece jednu kartu u ruku
 	 * @param karta karta koja se umece u ruku
 	 */
 	public void umetniKartu(Card karta){
 		karte.add(karta);
+		this.repaint();
 	}
 
 	
@@ -56,6 +65,8 @@ public class SkupKarata extends JComponent {
 				karta.draw(g, this);
 				varX = varX + karta.getWidth()+5;
 			}
+			g.setColor(Color.RED);
+			g.drawString(imeIgraca, varX - 120, varY + 100);
 		} else {
 			for(Card karta : karte){
 				karta.moveTo(varX, varY);
@@ -63,7 +74,10 @@ public class SkupKarata extends JComponent {
 				varX = varX + karta.getWidth()/2;
 				varY = varY + karta.getHeight()/10;
 			}
+			g.setColor(Color.RED);
+			g.drawString(imeIgraca, varX - 100 , varY + 90);
 		}
+		
 
 	}
 
