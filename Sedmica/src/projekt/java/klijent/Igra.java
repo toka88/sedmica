@@ -87,10 +87,11 @@ public class Igra extends JFrame {
 
         
         /* Dohvati najnovije stanje o broju igraca u sobi */
-        LjudiUSobi ljudiUSobi = veza.dohvatiLjudeUSobi();     
+        LjudiUSobi ljudiUSobi = veza.dohvatiLjudeUSobi(idSobe, igrac.getKljucKorisnika());     
         String[] imenaLjudi = ljudiUSobi.getLjudiUSobi();
-   
-        try {      	
+        try {     
+        
+        	if( imenaLjudi.length > 0 && !imenaLjudi[0].isEmpty()){
         	lijevoKarte.setImeIgraca(imenaLjudi[0]);
         	cp.getComponent(3).setVisible(true);
 
@@ -99,11 +100,17 @@ public class Igra extends JFrame {
 
 	        desnoKarte.setImeIgraca(imenaLjudi[2]);
 	        cp.getComponent(1).setVisible(true);
+        	}
         } catch (IndexOutOfBoundsException ex ){
         	//nema veze ;)
         }
-        
-        final int trenutnoLjudi = imenaLjudi.length + 1;
+        //ako nema nikoga u sobi trenutno ljudi je 0
+        int temp = imenaLjudi.length + 1;// inace ce biti 1,2,3 + 1(broji mene)
+        if( imenaLjudi[0].isEmpty() ){
+        	temp = 1; //samo sam ja u sobi
+        } 
+        	
+        final int trenutnoLjudi = temp;
         final int maxLjudi = ljudiUSobi.getMaxLjudi();
       
         
@@ -240,7 +247,7 @@ public class Igra extends JFrame {
 			@Override
 			protected String doInBackground() throws Exception {
 				while ( maxLjudi > tL ){
-					System.out.println("maxLjudi: " + maxLjudi);
+					//System.out.println("maxLjudi: " + maxLjudi);
 					System.out.println("tL: " + tL);
 					String imeIgraca = veza.cekajIgrace( idSobe );
 					SkupKarata karte = (SkupKarata) getContentPane().getComponent(noviIgrac++);
