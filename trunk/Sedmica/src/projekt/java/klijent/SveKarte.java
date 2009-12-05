@@ -1,5 +1,8 @@
 package projekt.java.klijent;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -25,9 +28,14 @@ public class SveKarte {
 			if (file.isFile()){
 				if (file.toString().endsWith(".gif") && !file.toString().contains("pozadina")){
 					String[] niz = file.getName().toString().split("\\.");
-					String[] niz2 = niz[0].split("_");
-					deck[i]=new Card(new ImageIcon(file.toString()),Integer.valueOf(niz2[1]));
-					i++;
+					/* Saklira sliku na zaljenu velicinu */
+					Image inImage = new ImageIcon(file.toString()).getImage();
+					Image img = inImage.getScaledInstance(73 , 97, Image.SCALE_SMOOTH);
+					ImageIcon newIcon = new ImageIcon(img);
+					
+					
+					deck[i++] = new Card(newIcon,Integer.valueOf(niz[0]));
+					
 				}
 			}
 		}
