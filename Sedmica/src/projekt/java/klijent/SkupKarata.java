@@ -6,7 +6,6 @@ import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 public class SkupKarata extends JComponent {
 
@@ -50,7 +49,7 @@ public class SkupKarata extends JComponent {
 		this.repaint();
 	}
 
-	
+	//TODO treba ljepse crtati imena igraca!
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
