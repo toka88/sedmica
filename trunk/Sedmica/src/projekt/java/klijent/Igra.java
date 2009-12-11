@@ -135,7 +135,9 @@ public class Igra extends JFrame {
 						stol.dodajMojeKarte(mojeKarte.getKarta(indeksKarte));
 					} catch (Exception ex) {
 					}
-					veza.povuciPotez(idSobe, igrac.getKljucKorisnika(), mojeKarte.getKarta(indeksKarte).getIdKarte());
+					byte[] posaljiKartu = new byte[1];
+					posaljiKartu[0] = (byte)mojeKarte.getKarta(indeksKarte).getIdKarte();
+					veza.povuciPotez(idSobe, igrac.getKljucKorisnika(),posaljiKartu );
 					mojeKarte.izbaciKartu(indeksKarte);
 					naReduSam = false;
 					indeksKarte = -1;
@@ -189,7 +191,7 @@ public class Igra extends JFrame {
 			@Override
 			protected String doInBackground() throws Exception {
 			while(true){
-				if(!naReduSam){
+				if(!naReduSam){//dodata zastavicu da ne trazi stvari bezveze.
 					String temp = veza.cekajPotez(idSobe);
 					String[] parm = temp.split(",");
 					int idKarte = Integer.parseInt(parm[0]);
@@ -261,7 +263,7 @@ public class Igra extends JFrame {
 				naReduSam = potez.isMojPotez();
 				workerCekajPotez.execute();
 				
-				
+				veza.zapocniIgru(idSobe);
 				return null;
 			}
         
@@ -269,7 +271,7 @@ public class Igra extends JFrame {
         workerCekaIgrace.execute();
         
    
-        setResizable(false);
+        ////setResizable(false);
 		setVisible(true);
 	}
 	

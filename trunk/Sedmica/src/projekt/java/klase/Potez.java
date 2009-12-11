@@ -1,5 +1,6 @@
 package projekt.java.klase;
 
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -19,9 +20,26 @@ public class Potez implements Serializable {
 	/** Ako korisnik želi nastaviti igrat u drugi krug */
 	private boolean mozesDalje = false;	
 	/** Zastavica koja govori smije li korisnik igrati ili ne */
-	boolean mojPotez = false;
+	private boolean mojPotez = false;
+	/** id od Sobe */
+	private int idSobe;
+	
+	/** Stream preko kojeg ce DretvaPartija odgovori klijentu. Nije serijaliziran parametar */
+	private transient ObjectOutputStream paketZaKlijenta;	
 	
 		
+	public int getIdSobe() {
+		return idSobe;
+	}
+	public void setIdSobe(int idSobe) {
+		this.idSobe = idSobe;
+	}
+	public ObjectOutputStream getPaketZaKlijenta() {
+		return paketZaKlijenta;
+	}
+	public void setPaketZaKlijenta(ObjectOutputStream paketZaKlijenta) {
+		this.paketZaKlijenta = paketZaKlijenta;
+	}
 	public Potez() {
 	}
 	public Potez(int kljucKorisnika, byte kodKarte) {
@@ -61,6 +79,10 @@ public class Potez implements Serializable {
 	}
 	public void setMojPotez(boolean mojPotez) {
 		this.mojPotez = mojPotez;
+	}
+	@Override
+	public String toString() {
+		return kljucKorisnika + "--" + kodKarte;
 	}
 
 	
