@@ -118,24 +118,47 @@ public class Server {
 			 */
 			/* Kod dolaznog paketa */
 			NabaviPaket zahtjevaniPakt = null;
+			/* Dolazni potezi */
+			Potez dolazniPotez = null;
+			boolean igraPotez = false;
 			
+			/* Kod nadolazeæe poruke...*/
+			int kod = 7;
 			try {
-				zahtjevaniPakt = (NabaviPaket) dolazniPaket.readObject();
+				Object testPrimjerak = dolazniPaket.readObject();
+				
+				if( testPrimjerak instanceof Potez ) { //System.out.println(" u instanceof sam!!");
+					igraPotez = true;
+					dolazniPotez = (Potez) testPrimjerak;
+					dolazniPotez.setPaketZaKlijenta(paketZaKlijenta);
+					listaSoba.get(dolazniPotez.getIdSobe()).getListaPoteza().add(dolazniPotez);
+					
+				}else{
+					zahtjevaniPakt = (NabaviPaket) testPrimjerak;										
+				}
+				
 			} catch (ClassNotFoundException e) {
 				System.err.println(" Problemi s dolaznim klasom.");
 			}
-            int kod = zahtjevaniPakt.getIndexPaketa();
-            /*
+			
+			
+			
+            if( !igraPotez ) kod = zahtjevaniPakt.getIndexPaketa();
+            
+            System.out.println(" Kod je " + kod);
+			
+			/*
 			System.out.println("Kod ->" + kod);
 			System.out.println("User ->" + zahtjevaniPakt.getUser());
 			System.out.println("Pass ->" + zahtjevaniPakt.getPass());
 			System.out.println("Email ->" + zahtjevaniPakt.getEmail());
 			System.out.println("Kljuè ->" + zahtjevaniPakt.getKljuc());
 			System.out.println("Id Sobe ->" + zahtjevaniPakt.getIdSobe());	*/		
-			try {/*TODO ÈEMU OVO? */
-				Thread.sleep(1000);
+			/* AKO ZELIS MALO USPORITI RAD SERVERA - RADI REALNOSTI 
+            try {
+				Thread.sleep(700);
 			} catch (InterruptedException e) {}
-			
+			*/
 			switch( kod ){				
 						/* Autorizacija  RETURN int kljucKorisnika*/
 				case 0: String user = zahtjevaniPakt.getUser();
@@ -161,7 +184,7 @@ public class Server {
 						break;						
 						/* Registracija RETURN boolean registracijaUspjela */
 				case 1: user = zahtjevaniPakt.getUser();
-						pass = zahtjevaniPakt.getUser();
+						pass = zahtjevaniPakt.getPass();
 						String email = zahtjevaniPakt.getEmail();
 						//System.out.println("Registriraj:" + user + pass + email);
 						/* Javi korisniku je li registriran ili nije */
@@ -204,7 +227,7 @@ public class Server {
 											
 						paketZaKlijenta.writeObject( new NabaviPaket(5));
 						//Pokreæe se dretva koja obraðuje partiju.
-						//new Thread ( new DretvaPartija(soba));
+						//new Thread ( new DretvaPartija(soba) ).start();
 						break;		
 						/* Vrši odjavljivanje od sustava. */
 				case 6: user = zahtjevaniPakt.getUser();
@@ -216,7 +239,22 @@ public class Server {
 						}
 						break;
 						/* Uði u sobu */
-				case 7: System.out.println(" Test PAKET. ");
+				case 7: System.out.println(" Break Point Potez. ");
+						break;
+				case 16:int trazenaSoba = zahtjevaniPakt.getIdSobe();
+						int jaTrazimKljuc = zahtjevaniPakt.getKljuc();
+						Soba tempSoba = listaSoba.get(trazenaSoba);
+						ArrayList<Igrac> popisIgraca = tempSoba.getPopisIgraca();
+						String ksVIgraci = new String();
+						for ( Igrac tmpIgrac : popisIgraca ){
+							if( tmpIgrac.getKljucKorisnika() == jaTrazimKljuc) continue;//Preskace onoga koji trazi ljude u sobi.
+							if( ksVIgraci.isEmpty()) ksVIgraci += tmpIgrac.getIme();
+							else ksVIgraci += "," + tmpIgrac.getIme();
+						}
+						NabaviPaket tempPaket = new NabaviPaket(16);
+						tempPaket.setUser(ksVIgraci);
+						tempPaket.setKljuc(tempSoba.getMaxBrojIgraca());
+						paketZaKlijenta.writeObject( tempPaket ); 
 						break;
 	
 				/* TODO ovo inaèe radi DretvaPartija() */
@@ -225,6 +263,7 @@ public class Server {
 						
 						Potez posaljiPotez = new Potez (0,karte); 
 						posaljiPotez.setMojPotez(true);
+						posaljiPotez.setMozesDalje(false);
 						paketZaKlijenta.writeObject( posaljiPotez );
 						/*NabaviPaket paket = new NabaviPaket(21); 
 						paket.setErr("1,1,4,12,1");
@@ -244,7 +283,6 @@ public class Server {
 						paketLjudiUSobi.setUser("TEstUser");
 						paketZaKlijenta.writeObject( paketLjudiUSobi );
 						System.out.println("SERVER: poslao sam podatke o novom korisniku ;)");
-						try {Thread.sleep(4000);} catch (InterruptedException e) {}
 						break;
 				case 30:
 						break;

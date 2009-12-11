@@ -21,8 +21,11 @@ public class Soba implements Serializable{
 	/** Indentifikacijski broj sobe */
 	private int idSobe;
 
-	/** Lista u koju server šalje sve zahtjeve od korisnika dretvi koja regulira partiju. */
-	private volatile LinkedList<Potez> odigraniPotez = new LinkedList<Potez>();
+	/** 
+	 * Lista u koju server šalje sve zahtjeve od korisnika dretvi koja regulira partiju.  
+	 * Ovaj parametar se ne serijalizira i salje.
+	 * */
+	private volatile transient LinkedList<Potez> odigraniPotez = new LinkedList<Potez>();
 
 	/** Metoda za dohvat listeOdigranih poteza */
 	public LinkedList<Potez> getListaPoteza(){

@@ -18,8 +18,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import com.sun.org.apache.bcel.internal.generic.LUSHR;
 /**
  * Klasa šalje i prima serializirane podatke od servera.
  * @author Mario
@@ -101,6 +99,41 @@ public class Paket {
 	    } finally{
 	    	close();
 	    }
+		return "Iznimka reda 0";	
+	}
+	/**
+	 * Funkcija za deautorizaciju korisnika
+	 * @param korisnik
+	 * @return vraæa null ako je autorizacija uspjela inaèe vraæa poruku greške.
+	 */
+	public String logout(Igrac korisnik) {
+		connect();  
+		try{
+			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+			NabaviPaket t = new NabaviPaket(6);
+			t.setUser(korisnik.getIme());
+			paketZaServer.writeObject( t ); 
+			
+			ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+			NabaviPaket paket = (NabaviPaket) paketOdServera.readObject();
+			if( paket.isIndex(4)){
+				return null;
+			} else if( paket.isIndex(-1)){
+				return paket.getErr();
+			}
+			
+			paketZaServer.close();
+			paketOdServera.close();
+		}
+		catch (IOException ioe){
+			System.out.println("Iznimka ulaza/izlaza");
+			System.exit(1);
+		}
+		catch(ClassNotFoundException k){
+			System.out.println("Dobivena kriva klasa " + k);
+		} finally{
+			close();
+		}
 		return "Iznimka reda 0";	
 	}
 	
@@ -232,7 +265,11 @@ public class Paket {
 	    }
 		return "Iznimka reda 0";	
 	}
-
+	/**
+	 * Pokreæe DretvaPartija na serveru.
+	 * @param idSobe
+	 * @return uspjesno pokrenuta dretva.
+	 */
 	public boolean zapocniIgru(int idSobe) {
         connect();
 		try{
@@ -296,82 +333,25 @@ public class Paket {
 	    }
 		return paketKarata;
 	}
-	/*	public byte[] dohvatiKarte(int idKorisnika) {
-        connect();
-		byte[] karte = new byte[5];
-		try{
-			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
-	        NabaviPaket paket = new NabaviPaket(21);
-	        paket.setKljuc(idKorisnika);
-			paketZaServer.writeObject( paket );
-	        
-	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
-	        NabaviPaket paketKarata = (NabaviPaket) paketOdServera.readObject();
-	        
-	       	
-	        String kSKarte = paketKarata.getErr();
-	        String[] temp = kSKarte.split(",");
-	        for( int i = 0; i < temp.length; i++){
-	        	karte[i] = (byte) Integer.parseInt(temp[i]);
-	        }
-	        
-	        paketZaServer.close();
-	        paketOdServera.close();
-		}
-	    catch (IOException ioe){
-	        System.out.println("Iznimka ulaza/izlaza");
-	        System.exit(1);
-	    }
-	    catch(ClassNotFoundException k){
-	        System.out.println("Dobivena kriva klasa " + k);
-	    } finally{
-	    	close();
-	    }
-		return karte;
-	}*/
 	
-	public String logout(Igrac korisnik) {
-		connect();  
-		try{
-			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
-	        NabaviPaket t = new NabaviPaket(6);
-	        t.setUser(korisnik.getIme());
-			paketZaServer.writeObject( t ); 
-	        
-	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
-	        NabaviPaket paket = (NabaviPaket) paketOdServera.readObject();
-	        if( paket.isIndex(4)){
-	        	return null;
-	        } else if( paket.isIndex(-1)){
-	        	return paket.getErr();
-	        }
-	       	        
-	        paketZaServer.close();
-	        paketOdServera.close();
-		}
-	    catch (IOException ioe){
-	        System.out.println("Iznimka ulaza/izlaza");
-	        System.exit(1);
-	    }
-	    catch(ClassNotFoundException k){
-	        System.out.println("Dobivena kriva klasa " + k);
-	    } finally{
-	    	close();
-	    }
-		return "Iznimka reda 0";	
-	}
+	
 	
 	/**
 	 * Revizija 1.0
 	 */
-	public void povuciPotez(int idSobe, int idIgraca, int odigranaKarta) {
+	public void povuciPotez(int idSobe, int idIgraca, byte[] odigranaKarta) {
         connect();
 		try{
 			ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
-	        NabaviPaket paket = new NabaviPaket(5);
+	        Potez paket = new Potez();
+	        paket.setKljucKorisnika(idIgraca);
+	        paket.setKodKarte(odigranaKarta);
 	        paket.setIdSobe(idSobe);
 			
 	        paketZaServer.writeObject( paket );      	        
+	        
+	        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+	        paketOdServera.close();
 	        paketZaServer.close();
 
 		}
@@ -410,12 +390,36 @@ public class Paket {
 	    }
 		return null;	
 	}
-	public LjudiUSobi dohvatiLjudeUSobi() {
-		LjudiUSobi ljudi = new LjudiUSobi();
-		String[] mario = {"Ivan"};
-		ljudi.setLjudiUSobi(mario);
-		ljudi.setMaxLjudi(4);
-		return ljudi;
+	public LjudiUSobi dohvatiLjudeUSobi( int idSobe, int kljucKorisnika) {
+		 connect();
+			try{
+				ObjectOutputStream paketZaServer = new ObjectOutputStream(klijentSocket.getOutputStream());          
+		        NabaviPaket paket = new NabaviPaket(16);
+		        paket.setIdSobe(idSobe);
+		        paket.setKljuc(kljucKorisnika);
+				paketZaServer.writeObject( paket );
+		        
+		        ObjectInputStream paketOdServera = new ObjectInputStream(klijentSocket.getInputStream());
+		        NabaviPaket paketLjudima = (NabaviPaket) paketOdServera.readObject();
+	        
+		        paketZaServer.close();
+		        paketOdServera.close();
+		        
+		        LjudiUSobi ljudi = new LjudiUSobi();
+		        ljudi.setLjudiUSobi(paketLjudima.getUser().split(","));
+		        ljudi.setMaxLjudi(paketLjudima.getKljuc());
+		        return ljudi;
+			}
+		    catch (IOException ioe){
+		        System.out.println("Iznimka ulaza/izlaza");
+		        System.exit(1);
+		    }
+		    catch(ClassNotFoundException k){
+		        System.out.println("Dobivena kriva klasa " + k);
+		    } finally{
+		    	close();
+		    }
+			return null;
 	}
 	public String cekajIgrace(int idSobe) {
 		 connect();
