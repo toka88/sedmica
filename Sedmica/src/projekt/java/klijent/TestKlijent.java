@@ -17,7 +17,7 @@ public class TestKlijent {
 		//System.out.println( veza.registrirajKorisnika("Napokon", "dva", "dfa") );
 		
 		
-		
+		  
 		
 		System.out.println("Klijent pocetak.");
 		Igrac igrac = new Igrac(3, "Mario");
