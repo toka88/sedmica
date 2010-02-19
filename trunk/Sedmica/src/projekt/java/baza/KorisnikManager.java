@@ -1,6 +1,7 @@
 package projekt.java.baza;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -176,6 +177,26 @@ public class KorisnikManager {
 				}
 			);
 		zavrsi();
+	}
+	
+	public static boolean update(final List<Korisnik> korisnici){
+		zapocni();
+		PersistenceUtil.executeSingleDatabaseOperation(
+				new DBOperacija<Void>() {
+					@Override
+					public Void executeOperation(EntityManager em) {
+						for(Korisnik k : korisnici){
+							if (k.getId()==null)
+								em.persist(k);
+							else
+								em.merge(k);
+						}
+						return null;
+					}
+				}
+			);
+		zavrsi();
+		return true;
 	}
 	
 	
