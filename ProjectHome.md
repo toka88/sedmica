@@ -1,0 +1,1 @@
+Kartaška igra koja će se igrati preko mreže.
